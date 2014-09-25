@@ -23,7 +23,7 @@ class Kindeditor::AssetsController < ApplicationController
       else # do not touch database
         begin
           uploader = "Kindeditor::#{@dir.camelize}Uploader".constantize.new
-          uploader.private_path = current_user.private_editor_resource_path if current_user && current_user.try(:private_editor_resource_path)
+          uploader.private_path = current_user.private_editor_resource_path if current_user && current_user.respond_to?(:private_editor_resource_path)
           uploader.store!(@imgFile)
           render :text => ({:error => 0, :url => uploader.url}.to_json)
         rescue CarrierWave::UploadError => e
