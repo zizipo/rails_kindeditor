@@ -8,7 +8,7 @@ class Kindeditor::AssetsController < ApplicationController
       if Kindeditor::AssetUploader.save_upload_info? # save upload info into database
         begin
           @asset = "Kindeditor::#{@dir.camelize}".constantize.new(:asset => @imgFile)
-          @asset.private_path = current_user.private_editor_resource_path if current_user && current_user.try(:private_editor_resource_path)
+          @asset.private_path = current_user.private_editor_resource_path if current_user && current_user.respond_to?(:private_editor_resource_path)
           @asset.owner_id = params[:owner_id] ? params[:owner_id] : 0
           logger.warn '========= Warning: the owner_id is 0, "delete uploaded files automatically" will not work. =========' if defined?(logger) && @asset.owner_id == 0
           @asset.asset_type = @dir
@@ -23,6 +23,7 @@ class Kindeditor::AssetsController < ApplicationController
       else # do not touch database
         begin
           uploader = "Kindeditor::#{@dir.camelize}Uploader".constantize.new
+          uploader.private_path = current_user.private_editor_resource_path if current_user && current_user.try(:private_editor_resource_path)
           uploader.store!(@imgFile)
           render :text => ({:error => 0, :url => uploader.url}.to_json)
         rescue CarrierWave::UploadError => e
@@ -39,7 +40,7 @@ class Kindeditor::AssetsController < ApplicationController
   def list
     @root_path = "#{Rails.public_path}/#{RailsKindeditor.upload_store_dir}/"
     @root_url = "/#{RailsKindeditor.upload_store_dir}/"
-    if current_user && current_user.try(:private_editor_resource_path)
+    if current_user && current_user.respond_to?(:private_editor_resource_path)
       @root_path = "#{Rails.public_path}/#{RailsKindeditor.upload_store_dir}/#{current_user.private_editor_resource_path}/"
       @root_url = "/#{RailsKindeditor.upload_store_dir}/#{current_user.private_editor_resource_path}/"
     end
@@ -51,7 +52,7 @@ class Kindeditor::AssetsController < ApplicationController
     end
 
     Dir.chdir(Rails.public_path)
-    RailsKindeditor.upload_store_dir.split('/').each do |dir|
+    @root_url.gsub(/\w+/).each do |dir|
       Dir.mkdir(dir) unless Dir.exist?(dir)
       Dir.chdir(dir)
     end
