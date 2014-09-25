@@ -3,7 +3,7 @@
 require 'carrierwave/processing/mime_types'
 
 class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
-  
+
   EXT_NAMES = {:image => RailsKindeditor.upload_image_ext,
                :flash => RailsKindeditor.upload_flash_ext,
                :media => RailsKindeditor.upload_media_ext,
@@ -18,13 +18,16 @@ class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
   storage :file
   # storage :fog
 
+  #for user private resource path
+  attr_accessor :private_path
+
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
     if Kindeditor::AssetUploader.save_upload_info?
-      "#{RailsKindeditor.upload_store_dir}/#{model.asset_type.to_s.underscore.gsub(/(kindeditor\/)|(_uploader)/, '')}/#{model.created_at.strftime("%Y%m")}"
+      "#{RailsKindeditor.upload_store_dir}/#{private_path}/#{model.asset_type.to_s.underscore.gsub(/(kindeditor\/)|(_uploader)/, '')}/#{model.created_at.strftime("%Y%m")}"
     else
-      "#{RailsKindeditor.upload_store_dir}/#{self.class.to_s.underscore.gsub(/(kindeditor\/)|(_uploader)/, '')}/#{Time.now.strftime("%Y%m")}"
+      "#{RailsKindeditor.upload_store_dir}/#{private_path}/#{self.class.to_s.underscore.gsub(/(kindeditor\/)|(_uploader)/, '')}/#{Time.now.strftime("%Y%m")}"
     end
   end
 
@@ -70,12 +73,12 @@ class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
   end
 
   def filename
-    if original_filename 
+    if original_filename
       @name ||= Digest::MD5.hexdigest(File.dirname(current_path)).slice(0, 12)
       "#{@name}.#{file.extension}"
     end
   end
-  
+
   def self.save_upload_info?
     begin
       %w(asset file flash image media).each do |s|
