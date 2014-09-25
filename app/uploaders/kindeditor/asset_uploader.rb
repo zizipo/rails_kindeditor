@@ -24,11 +24,10 @@ class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
-    if Kindeditor::AssetUploader.save_upload_info?
-      "#{RailsKindeditor.upload_store_dir}/#{private_path}/#{model.asset_type.to_s.underscore.gsub(/(kindeditor\/)|(_uploader)/, '')}/#{model.created_at.strftime("%Y%m")}"
-    else
-      "#{RailsKindeditor.upload_store_dir}/#{private_path}/#{self.class.to_s.underscore.gsub(/(kindeditor\/)|(_uploader)/, '')}/#{Time.now.strftime("%Y%m")}"
-    end
+    @store_dir ||= [RailsKindeditor.upload_store_dir].
+      push(private_path).
+      push(Kindeditor::AssetUploader.save_upload_info? ? [model.asset_type.to_s.underscore,model.created_at.strftime("%Y%m")] : [self.class.to_s.underscore,Time.now.strftime("%Y%m")]).
+      flatten.compact.join("/").gsub(/(kindeditor\/)|(_uploader)/, '')
   end
 
   def cache_dir
