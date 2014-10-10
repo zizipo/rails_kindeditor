@@ -239,6 +239,20 @@ Warnning: the @article must be created before this scene, the @article.id should
   asset.owner # => aritcle
 ```
 
+####4 If you want a private folder for every user (eg: in sns website),add a method: private_editor_resource_path,
+
+```ruby
+  class User < ActiveRecord::Base 
+    def private_editor_resource_path
+      @private_path ||= Digest::MD5.hexdigest(SecretPathKey + self.id.to_s)[0..10]
+    end 
+  end
+``` 
+
+```ruby
+Note: you must need another controller method: current_user (current login user)
+```
+
 ### If you're using mongoid, please add 'gem "carrierwave-mongoid"' in your Gemfile
 
 ```ruby
