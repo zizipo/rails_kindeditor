@@ -23,6 +23,9 @@ module RailsKindeditor
 
   mattr_accessor :image_resize_to_limit
 
+  mattr_accessor :use_original_filename
+  @@use_original_filename = true
+
   def self.root_path
     @root_path ||= Pathname.new(File.dirname(File.expand_path('../', __FILE__)))
   end
