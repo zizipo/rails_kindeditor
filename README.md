@@ -175,6 +175,9 @@ You can customize some option for uploading.
   config.upload_flash_ext = %w[swf flv]
   config.upload_media_ext = %w[swf flv mp3 wav wma wmv mid avi mpg asf rm rmvb]
   config.upload_file_ext = %w[doc docx xls xlsx ppt htm html txt zip rar gz bz2]
+ 
+  # If you don't want use the original file name (carrierwave carry)
+  config.use_original_filename = false
 
   # Porcess upload image size, need mini_magick
   #     before    => after
