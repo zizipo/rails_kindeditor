@@ -7,7 +7,7 @@ module RailsKindeditor
       output << text_area_tag(name, content, input_html)
       output << javascript_tag(js_replace(id, options))
     end
-    
+
     def kindeditor(name, method, options = {})
       # TODO: Refactory options: 1. kindeditor_option 2. html_option
       input_html = (options.delete(:input_html) || {}).stringify_keys
@@ -15,19 +15,20 @@ module RailsKindeditor
       output_buffer << build_text_area_tag(name, method, self, options, input_html)
       output_buffer << javascript_tag(js_replace(input_html['id'], options))
     end
-    
+
     def kindeditor_upload_json_path(*args)
       options = args.extract_options!
-      owner_id_query_string = options[:owner_id] ? "?owner_id=#{options[:owner_id]}" : ''
-      "#{main_app_root_url}kindeditor/upload#{owner_id_query_string}"
+      owner_id_query_string = options[:owner_id] ? "owner_id=#{options[:owner_id]}" : ''
+      fixed_folder = options[:fixed_folder] ? "fixed_folder=#{options[:fixed_folder]}" : ''
+      "#{main_app_root_url}kindeditor/upload?#{fixed_folder}&#{owner_id_query_string}"
     end
-    
+
     def kindeditor_file_manager_json_path
       "#{main_app_root_url}kindeditor/filemanager"
     end
-    
+
     private
-    
+
     def main_app_root_url
       begin
         main_app.root_url.slice(0, main_app.root_url.rindex(main_app.root_path)) + '/'
@@ -35,7 +36,7 @@ module RailsKindeditor
         '/'
       end
     end
-    
+
     def js_replace(dom_id, options = {})
       editor_id = options[:editor_id].nil? ? '' : "#{options[:editor_id].to_s.downcase} = "
       if options[:window_onload]
@@ -60,7 +61,7 @@ module RailsKindeditor
       options.reverse_merge!(:width => '100%')
       options.reverse_merge!(:height => 300)
       options.reverse_merge!(:allowFileManager => true)
-      options.merge!(:uploadJson => kindeditor_upload_json_path(:owner_id => options.delete(:owner_id)))
+      options.merge!(:uploadJson => kindeditor_upload_json_path( options.extract!(:owner_id,:fixed_folder)))
       options.merge!(:fileManagerJson => kindeditor_file_manager_json_path)
       if options[:simple_mode] == true
         options.merge!(:items => %w{fontname fontsize | forecolor hilitecolor bold italic underline removeformat | justifyleft justifycenter justifyright insertorderedlist insertunorderedlist | emoticons image link})
@@ -68,7 +69,7 @@ module RailsKindeditor
       options.delete(:simple_mode)
       options
     end
-    
+
     def build_text_area_tag(name, method, template, options, input_html)
       if Rails.version >= '4.0.0'
         text_area_tag = ActionView::Helpers::Tags::TextArea.new(name, method, template, options)
@@ -85,7 +86,7 @@ module RailsKindeditor
       end
     end
   end
-  
+
   module Builder
     def kindeditor(method, options = {})
       @template.send("kindeditor", @object_name, method, objectify_options(options))

@@ -20,15 +20,18 @@ class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
 
   #for user private resource path
   attr_accessor :private_path
+  attr_accessor :fixed_folder
+
 
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
     @store_dir ||= [RailsKindeditor.upload_store_dir].
       push(private_path).
-      push(Kindeditor::AssetUploader.save_upload_info? ? [model.asset_type.to_s.underscore,model.created_at.strftime("%Y%m")] : [self.class.to_s.underscore,Time.now.strftime("%Y%m")]).
+      push(calcuate_object_folder).
       flatten.compact.join("/").gsub(/(kindeditor\/)|(_uploader)/, '')
   end
+
 
   def cache_dir
     "#{Rails.root}/tmp/uploads"
@@ -71,8 +74,9 @@ class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
     end
   end
 
+  #if the folder is fixed ,we use the opiginal_filename
   def filename
-    if RailsKindeditor.use_original_filename
+    if RailsKindeditor.use_original_filename || fixed_folder
       super
     elsif  original_filename
       @name ||= Digest::MD5.hexdigest(File.dirname(current_path)).slice(0, 12)
@@ -88,6 +92,16 @@ class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
       return true
     rescue
       return false
+    end
+  end
+
+  private
+
+  def calcuate_object_folder
+    if Kindeditor::AssetUploader.save_upload_info?
+      [model.asset_type.to_s.underscore,fixed_folder.nil? ? model.created_at.strftime("%Y%m") : fixed_folder]
+    else
+      [self.class.to_s.underscore,fixed_folder.nil? ? Time.now.strftime("%Y%m") : fixed_folder]
     end
   end
 

@@ -248,6 +248,11 @@ Warnning: the @article must be created before this scene, the @article.id should
     end 
   end
 ``` 
+####4 If you want a fixed_folder for special scence,you can set fixed_folder options 
+
+```ruby
+    <%= f.kindeditor :content,fixed_folder: "custom_folder" %>
+``` 
 
 ```ruby
 Note: you must need another controller method: current_user (current login user)

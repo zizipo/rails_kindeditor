@@ -3,11 +3,13 @@ require "find"
 class Kindeditor::AssetsController < ApplicationController
   skip_before_filter :verify_authenticity_token
   def create
-    @imgFile, @dir = params[:imgFile], params[:dir]
+    @imgFile, @dir, @fixed_folder = params[:imgFile], params[:dir], params[:fixed_folder]
+
     unless @imgFile.nil?
       if Kindeditor::AssetUploader.save_upload_info? # save upload info into database
         begin
-          @asset = "Kindeditor::#{@dir.camelize}".constantize.new(:asset => @imgFile)
+          @asset = "Kindeditor::#{@dir.camelize}".constantize.new(:asset => @imgFile,:fixed_folder => @fixed_folder)
+
           @asset.private_path = current_user.private_editor_resource_path if current_user && current_user.respond_to?(:private_editor_resource_path)
           @asset.owner_id = params[:owner_id] ? params[:owner_id] : 0
           logger.warn '========= Warning: the owner_id is 0, "delete uploaded files automatically" will not work. =========' if defined?(logger) && @asset.owner_id == 0
@@ -24,6 +26,7 @@ class Kindeditor::AssetsController < ApplicationController
         begin
           uploader = "Kindeditor::#{@dir.camelize}Uploader".constantize.new
           uploader.private_path = current_user.private_editor_resource_path if current_user && current_user.respond_to?(:private_editor_resource_path)
+          uploader.fixed_folder = @fixed_folder
           uploader.store!(@imgFile)
           render :text => ({:error => 0, :url => uploader.url}.to_json)
         rescue CarrierWave::UploadError => e
