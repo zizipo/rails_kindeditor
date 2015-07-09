@@ -7,8 +7,8 @@ Gem::Specification.new do |s|
   s.version     = RailsKindeditor::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = "Macrow"
-  s.email       = "Macrow_wh@163.com"
-  s.homepage    = "http://github.com/Macrow"
+  s.email       = "javy_liu@163.com"
+  s.homepage    = "http://github.com/javy_liu/rails_kindeditor"
   s.summary     = "Kindeditor for Ruby on Rails"
   s.description = "rails_kindeditor will helps your rails app integrate with kindeditor, including images and files uploading."
   s.license = 'MIT'
