@@ -21,6 +21,8 @@ class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
   #for user private resource path
   attr_accessor :private_path
   attr_accessor :fixed_folder
+  #use this to set the digest filename for a special upload
+  attr_accessor :digest_filename
 
 
   # Override the directory where uploaded files will be stored.
@@ -74,9 +76,10 @@ class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
     end
   end
 
-  #if the folder is fixed ,we use the opiginal_filename
+  #if the folder is fixed and !digest_filename is true  ,we use the opiginal_filename
+  #if set use_original_filename ,we use the opiginal_filename
   def filename
-    if RailsKindeditor.use_original_filename || fixed_folder
+    if RailsKindeditor.use_original_filename || (fixed_folder && !digest_filename)
       super
     elsif  original_filename
       @name ||= Digest::MD5.hexdigest(File.dirname(current_path)).slice(0, 12)

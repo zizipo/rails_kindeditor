@@ -176,8 +176,15 @@ You can customize some option for uploading.
   config.upload_media_ext = %w[swf flv mp3 wav wma wmv mid avi mpg asf rm rmvb]
   config.upload_file_ext = %w[doc docx xls xlsx ppt htm html txt zip rar gz bz2]
  
-  # If you don't want use the original file name (carrierwave carry)
+  # If you don't want use the original file name (carrierwave carry) 
   config.use_original_filename = false
+
+  # and if you use fixed_folder it will use the original file name 
+  <%= form.kindeditor :content, fixed_folder: 'game/img' %>
+
+  # if you use fixed_folder and you don't use the original file name ,you can add digest_filename = true 
+
+  <%= form.kindeditor :content, fixed_folder: 'game/img',digest_filename: true %>
 
   # Porcess upload image size, need mini_magick
   #     before    => after

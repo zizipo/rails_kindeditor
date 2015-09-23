@@ -3,7 +3,7 @@ require "find"
 class Kindeditor::AssetsController < ApplicationController
   skip_before_filter :verify_authenticity_token
   def create
-    @imgFile, @dir, @fixed_folder = params[:imgFile], params[:dir], params[:fixed_folder]
+    @imgFile, @dir, @fixed_folder,@digest_filename = params[:imgFile], params[:dir], params[:fixed_folder],params[:digest_filename]
 
     unless @imgFile.nil?
       if Kindeditor::AssetUploader.save_upload_info? # save upload info into database
@@ -27,6 +27,7 @@ class Kindeditor::AssetsController < ApplicationController
           uploader = "Kindeditor::#{@dir.camelize}Uploader".constantize.new
           uploader.private_path = current_user.private_editor_resource_path if current_user && current_user.respond_to?(:private_editor_resource_path)
           uploader.fixed_folder = @fixed_folder
+          uploader.digest_filename = @digest_filename
           uploader.store!(@imgFile)
           render :text => ({:error => 0, :url => uploader.url}.to_json)
         rescue CarrierWave::UploadError => e
