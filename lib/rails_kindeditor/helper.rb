@@ -20,7 +20,8 @@ module RailsKindeditor
       options = args.extract_options!
       owner_id_query_string = options[:owner_id] ? "owner_id=#{options[:owner_id]}" : ''
       fixed_folder = options[:fixed_folder] ? "fixed_folder=#{options[:fixed_folder]}" : ''
-      "#{main_app_root_url}kindeditor/upload?#{fixed_folder}&#{owner_id_query_string}"
+      digest_filename = options[:fixed_folder] ? "digest_filename=#{options[:digest_filename]}" : ''
+      "#{main_app_root_url}kindeditor/upload?#{fixed_folder}&#{owner_id_query_string}&#{digest_filename}"
     end
 
     def kindeditor_file_manager_json_path
