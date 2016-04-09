@@ -84,7 +84,10 @@ class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
       p super
       p current_path
       p file.extension
+      p 'ddddd'
       p Digest::MD5.hexdigest(file.read)
+      p 'cccc'
+      p Digest::MD5.hexdigest(File.read(current_path))
       super
     elsif  original_filename
       @name ||= Digest::MD5.hexdigest(File.dirname(current_path)).slice(0, 12)
