@@ -80,15 +80,8 @@ class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
   #if set use_original_filename ,we use the opiginal_filename
   def filename
     if RailsKindeditor.use_original_filename || (fixed_folder && !digest_filename)
-      p file
-      p super
-      p current_path
-      p file.extension
-      p 'ddddd'
-      p Digest::MD5.hexdigest(file.read)
-      p 'cccc'
-      p Digest::MD5.hexdigest(File.read(current_path))
-      super
+      tmp_name = super
+      tmp_name.chmop(".#{file.extension}") + "_" + Digest::MD5.hexdigest(file.read)+ "." + file.extension
     elsif  original_filename
       @name ||= Digest::MD5.hexdigest(File.dirname(current_path)).slice(0, 12)
       "#{@name}.#{file.extension}"
